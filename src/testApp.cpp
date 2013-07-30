@@ -19,6 +19,7 @@ CvBox2D BestBox;
 int G_PointOffset;
 bool G_edges = false;
 bool G_smooth = false;
+int G_input =0;
 //--------------------------------------------------------------
 void testApp::setup(){
     
@@ -26,7 +27,7 @@ void testApp::setup(){
     vidGrabber.initGrabber(Nx,Ny);
     colorImg.allocate(Nx,Ny);
 	grayImage.allocate(Nx,Ny);
-    PatternRead.loadImage("bunny.png");
+    PatternRead.loadImage("two.png");
     PatternColor.allocate(PatternRead.width, PatternRead.height);
     PatternColor.setFromPixels(PatternRead.getPixels(),PatternRead.width,PatternRead.height);
     PatternGray.allocate(PatternRead.width, PatternRead.height);
@@ -134,6 +135,7 @@ void testApp::update(){
         
         colorImg.setFromPixels(vidGrabber.getPixels(), Nx,Ny);
         grayImage = colorImg;
+        ColorInputCV = colorImg.getCvImage();
         //TheInput = colorImg.getCvImage();
         InputCV = grayImage.getCvImage();
         
@@ -156,8 +158,20 @@ void testApp::update(){
         // whiteImage
         cvSet( AuxPaint, cvScalarAll(255));
         cvSet(G_LevelsImage, cvScalarAll(255));
-        // gray levels
-        cvCvtColor(InputCV,COLORFULONE,CV_GRAY2BGR);
+       
+        
+        if(G_input==0){ // using grayscale values
+       
+            // gray levels
+            cvCvtColor(InputCV,COLORFULONE,CV_GRAY2BGR);
+        }
+        else{ // using the hue plane
+            cvCvtColor(ColorInputCV,COLORFULONE,CV_RGB2HSV);
+            cvSplit(COLORFULONE, InputCV, NULL, NULL, NULL);
+            cvCopy(ColorInputCV, COLORFULONE);
+        }
+        
+        
 
         double minCuanto=100000000000;
         
@@ -509,6 +523,11 @@ void testApp::keyPressed(int key){
         case 's':
             G_smooth = !G_smooth;
             break;
+            
+        case 'i':
+            G_input = (G_input==0)?1:0;
+            break;
+            
         case OF_KEY_RIGHT:
             G_PointOffset++;
             if(G_PointOffset >3){G_PointOffset =0;}

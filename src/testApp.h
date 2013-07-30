@@ -27,7 +27,7 @@ class testApp : public ofBaseApp{
         ofxCvGrayscaleImage PatternGray;
         IplImage * TargetCV;
         IplImage *  InputCV;  // opencv image for input
-
+        IplImage * ColorInputCV;// opencv image needed for Hue segmentation
 
         double G_value;
         ofTrueTypeFont  Fuente;
